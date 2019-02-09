@@ -1,0 +1,60 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion "$targetSdk".toInteger()
+    defaultConfig {
+        applicationId "com.andrewvora.apps.jaru"
+        minSdkVersion "$minSdk".toInteger()
+        targetSdkVersion "$targetSdk".toInteger()
+        versionCode 1
+        versionName "1.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    androidExtensions {
+        experimental = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':domain')
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-alpha3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
+
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+
+    testImplementation "junit:junit:$junitVersion"
+
+    androidTestImplementation "androidx.test:runner:1.1.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.1.1"
+
+    implementation "com.google.android.material:material:1.0.0"
+    implementation "android.arch.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "android.arch.navigation:navigation-ui-ktx:$navigationVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
+    testImplementation "androidx.arch.core:core-testing:$lifecycleVersion"
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycleVersion"
+
+    implementation "com.jakewharton.timber:timber:4.7.1"
+    implementation "com.facebook.stetho:stetho:$stethoVersion"
+    implementation "com.facebook.stetho:stetho-okhttp3:$stethoVersion"
+}

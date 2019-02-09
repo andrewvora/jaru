@@ -1,0 +1,246 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "2563d660346ebba475e3fe786d345c0d",
+    "entities": [
+      {
+        "tableName": "answer",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`answer_id` TEXT NOT NULL, `text` TEXT, `question_id` TEXT, PRIMARY KEY(`answer_id`), FOREIGN KEY(`question_id`) REFERENCES `question`(`question_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "answerId",
+            "columnName": "answer_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "questionId",
+            "columnName": "question_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "answer_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "question",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "question_id"
+            ],
+            "referencedColumns": [
+              "question_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "question",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`question_id` TEXT NOT NULL, `text` TEXT, `transcript` TEXT, `answer_id` TEXT, `type` TEXT, `question_set_id` TEXT, PRIMARY KEY(`question_id`), FOREIGN KEY(`question_set_id`) REFERENCES `question_set`(`question_set_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "questionId",
+            "columnName": "question_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transcript",
+            "columnName": "transcript",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "answerId",
+            "columnName": "answer_id",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "setId",
+            "columnName": "question_set_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "question_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "question_set",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "question_set_id"
+            ],
+            "referencedColumns": [
+              "question_set_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "question_set",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`question_set_id` TEXT NOT NULL, `difficulty` TEXT, `title` TEXT, `description` TEXT, PRIMARY KEY(`question_set_id`))",
+        "fields": [
+          {
+            "fieldPath": "setId",
+            "columnName": "question_set_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "difficulty",
+            "columnName": "difficulty",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "question_set_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "glossary_item",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`glossary_item_id` TEXT NOT NULL, `text` TEXT, `transcript` TEXT, `displayOrder` INTEGER NOT NULL, `glossary_id` TEXT, PRIMARY KEY(`glossary_item_id`), FOREIGN KEY(`glossary_id`) REFERENCES `glossary`(`glossary_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "itemId",
+            "columnName": "glossary_item_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "text",
+            "columnName": "text",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "transcript",
+            "columnName": "transcript",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "displayOrder",
+            "columnName": "displayOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "glossaryId",
+            "columnName": "glossary_id",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "glossary_item_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "glossary",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "glossary_id"
+            ],
+            "referencedColumns": [
+              "glossary_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "glossary",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`glossary_id` TEXT NOT NULL, `title` TEXT, `subtitle` TEXT, PRIMARY KEY(`glossary_id`))",
+        "fields": [
+          {
+            "fieldPath": "glossaryId",
+            "columnName": "glossary_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "subtitle",
+            "columnName": "subtitle",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "glossary_id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"2563d660346ebba475e3fe786d345c0d\")"
+    ]
+  }
+}

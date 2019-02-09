@@ -1,0 +1,28 @@
+package com.andrewvora.apps.jaru.di.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.andrewvora.apps.jaru.glossary.GlossaryViewModel
+import com.andrewvora.apps.jaru.home.HomeViewModel
+import com.andrewvora.apps.jaru.questionsets.QuestionSetsViewModel
+import dagger.Binds
+import dagger.Module
+import dagger.multibindings.IntoMap
+
+@Module
+abstract class ViewModelModule {
+
+    @Binds
+    internal abstract fun bindViewModelFactory(
+        factory: ViewModelFactory
+    ): ViewModelProvider.Factory
+
+    @Binds @IntoMap @ViewModelKey(QuestionSetsViewModel::class)
+    internal abstract fun bindQuestionSetsViewModel(model: QuestionSetsViewModel): ViewModel
+
+    @Binds @IntoMap @ViewModelKey(GlossaryViewModel::class)
+    internal abstract fun bindGlossaryViewModel(model: GlossaryViewModel): ViewModel
+
+    @Binds @IntoMap @ViewModelKey(HomeViewModel::class)
+    internal abstract fun bindHomeViewModel(model: HomeViewModel): ViewModel
+}

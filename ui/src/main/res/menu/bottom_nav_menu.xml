@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_question_sets"
+        android:title="@string/menu_sets"
+        android:icon="@drawable/ic_menu_sets_24dp"/>
+
+    <item
+        android:id="@+id/navigation_glossary"
+        android:title="@string/menu_glossary"
+        android:icon="@drawable/ic_menu_glossary_24dp"/>
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:title="@string/menu_settings"
+        android:icon="@drawable/ic_menu_settings_24dp"/>
+
+</menu>

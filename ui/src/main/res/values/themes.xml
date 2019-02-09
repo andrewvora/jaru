@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.Default" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- General theme colors -->
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:colorForeground">@color/colorAccent</item>
+        <!-- Text Appearance styles -->
+        <item name="android:textColorPrimary">@color/gray</item>
+        <item name="android:textColorSecondary">@color/gray</item>
+        <item name="android:textColorTertiary">@color/gray</item>
+        <item name="android:textColorLink">@color/colorAccent</item>
+        <item name="android:textColorHint">@color/gray</item>
+        <item name="android:textColorPrimaryInverse">@color/white</item>
+        <item name="android:textColorSecondaryInverse">@color/white</item>
+        <item name="android:textColorTertiaryInverse">@color/white</item>
+        <item name="android:textColorLinkInverse">@color/colorAccent</item>
+        <item name="android:textColorHintInverse">@color/white</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="AppTheme.Default">
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
+    <style name="PopupMenuTheme" parent="Base.Widget.AppCompat.Light.PopupMenu">
+        <item name="colorAccent">?colorAccent</item>
+        <item name="android:textColorSecondary">?android:textColorPrimary</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+</resources>
