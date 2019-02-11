@@ -13,7 +13,9 @@ object GlossaryMapper {
             id = glossaryDto.id ?: "",
             title = glossaryDto.title ?: "",
             subtitle = glossaryDto.subtitle ?: "",
-            items = glossaryDto.items?.map { from(it) } ?: listOf()
+            items = glossaryDto.items
+                ?.map { from(it) }
+                ?.sortedBy { it.displayOrder } ?: listOf()
         )
     }
 
