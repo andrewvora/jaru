@@ -3,6 +3,7 @@ package com.andrewvora.apps.jaru.di.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.andrewvora.apps.jaru.glossary.GlossaryViewModel
+import com.andrewvora.apps.jaru.viewglossary.ViewGlossaryViewModel
 import com.andrewvora.apps.jaru.home.HomeViewModel
 import com.andrewvora.apps.jaru.questionsets.QuestionSetsViewModel
 import dagger.Binds
@@ -25,4 +26,7 @@ abstract class ViewModelModule {
 
     @Binds @IntoMap @ViewModelKey(HomeViewModel::class)
     internal abstract fun bindHomeViewModel(model: HomeViewModel): ViewModel
+
+    @Binds @IntoMap @ViewModelKey(ViewGlossaryViewModel::class)
+    internal abstract fun bindGlossaryViewerViewModel(model: ViewGlossaryViewModel): ViewModel
 }

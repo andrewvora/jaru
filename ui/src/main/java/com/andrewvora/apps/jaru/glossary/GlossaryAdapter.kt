@@ -8,7 +8,8 @@ import com.andrewvora.apps.domain.models.Glossary
 import com.andrewvora.apps.jaru.R
 import kotlinx.android.synthetic.main.item_glossary.view.*
 
-class GlossaryAdapter : RecyclerView.Adapter<GlossaryAdapter.ViewHolder>() {
+class GlossaryAdapter
+constructor(private val callback: (Glossary) -> Unit): RecyclerView.Adapter<GlossaryAdapter.ViewHolder>() {
 
     private var glossaries: List<Glossary> = emptyList()
 
@@ -34,8 +35,11 @@ class GlossaryAdapter : RecyclerView.Adapter<GlossaryAdapter.ViewHolder>() {
         holder.bind(glossaries[position])
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(glossary: Glossary) {
+            itemView.setOnClickListener {
+                callback(glossaries[adapterPosition])
+            }
             itemView.glossary_title.text = glossary.title
             itemView.glossary_subtitle.text = glossary.subtitle
         }

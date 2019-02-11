@@ -11,6 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.andrewvora.apps.jaru.R
 import com.andrewvora.apps.jaru.di.viewmodel.ViewModelActivity
 import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.element_toolbar.*
 
 
 class HomeActivity : ViewModelActivity() {

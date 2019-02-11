@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.andrewvora.apps.jaru.R
 import com.andrewvora.apps.jaru.di.viewmodel.ViewModelFragment
+import com.andrewvora.apps.jaru.viewglossary.ViewGlossaryActivity
 import kotlinx.android.synthetic.main.fragment_glossary.*
 
 
@@ -19,7 +20,10 @@ class GlossaryFragment : ViewModelFragment() {
     }
 
     private val glossaryAdapter by lazy {
-        GlossaryAdapter()
+        GlossaryAdapter { selectedGlossary ->
+            val intent = ViewGlossaryActivity.start(activity!!, selectedGlossary.id)
+            startActivity(intent)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

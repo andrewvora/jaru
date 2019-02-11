@@ -23,6 +23,7 @@
 
     <style name="ToolbarTheme" parent="AppTheme.Default">
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:tint">@color/white</item>
     </style>
 
     <style name="PopupMenuTheme" parent="Base.Widget.AppCompat.Light.PopupMenu">

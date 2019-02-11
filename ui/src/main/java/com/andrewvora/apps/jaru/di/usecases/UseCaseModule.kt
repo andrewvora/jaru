@@ -5,10 +5,7 @@ import com.andrewvora.apps.domain.CoroutineContextProvider
 import com.andrewvora.apps.domain.mappers.GlossaryMapper
 import com.andrewvora.apps.domain.mappers.QuestionMapper
 import com.andrewvora.apps.domain.mappers.QuestionSetMapper
-import com.andrewvora.apps.domain.usecases.DownloadLearningSetUseCase
-import com.andrewvora.apps.domain.usecases.GetGlossariesUseCase
-import com.andrewvora.apps.domain.usecases.GetQuestionSetsUseCase
-import com.andrewvora.apps.domain.usecases.GetQuestionsUseCase
+import com.andrewvora.apps.domain.usecases.*
 import dagger.Module
 import dagger.Provides
 
@@ -35,6 +32,18 @@ class UseCaseModule {
         contextProvider: CoroutineContextProvider
     ): GetGlossariesUseCase {
         return GetGlossariesUseCase(
+            jaruRepository = jaruRepository,
+            glossaryMapper = GlossaryMapper,
+            contextProvider = contextProvider
+        )
+    }
+
+    @Provides
+    fun getGlossaryUseCase(
+        jaruRepository: JaruRepository,
+        contextProvider: CoroutineContextProvider
+    ): GetGlossaryUseCase {
+        return GetGlossaryUseCase(
             jaruRepository = jaruRepository,
             glossaryMapper = GlossaryMapper,
             contextProvider = contextProvider
