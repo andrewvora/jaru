@@ -27,6 +27,10 @@ internal constructor(
         return localSource.getLearningSet()?.questionSets ?: emptyList()
     }
 
+    override fun fetchQuestionSet(id: String): QuestionSetDto {
+        return localSource.getQuestionSet(id)
+    }
+
     override fun fetchQuestions(setId: String): List<QuestionDto> {
         return localSource.getQuestions(questionSetId = setId)
     }

@@ -38,13 +38,32 @@ internal class LearningSetRoomSource(
                 })
     }
 
+    fun getQuestionSet(questionSetId: String): QuestionSetDto {
+        val setEntity = jaruDb.questionSetDao().get(questionSetId)
+        val setDto = questionSetMapper.entityToDto(setEntity) ?: QuestionSetDto()
+        val questionDtos = jaruDb.questionDao().getQuestions(setEntity.setId).map {
+            questionMapper.entityToDto(it)
+        }
+        return setDto.copy(questions = questionDtos.mapNotNull { question ->
+            return@mapNotNull question?.copy(
+                answers = jaruDb
+                    .answerDao()
+                    .getAnswers(question.id ?: "")
+                    .mapNotNull {
+                        answerMapper.entityToDto(it)
+                    })
+        })
+    }
+
     fun getQuestions(questionSetId: String): List<QuestionDto> {
         return jaruDb.questionDao()
             .getQuestions(setId = questionSetId)
-            .mapNotNull {
+            .mapNotNull { question ->
                 questionMapper.entityToDto(
-                    entity = it
-                )
+                    entity = question
+                )?.copy(answers = jaruDb.answerDao().getAnswers(question.questionId).mapNotNull { answer ->
+                    answerMapper.entityToDto(answer)
+                })
             }
     }
 

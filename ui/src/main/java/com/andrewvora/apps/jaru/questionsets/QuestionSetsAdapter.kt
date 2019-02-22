@@ -9,7 +9,10 @@ import com.andrewvora.apps.jaru.R
 import kotlinx.android.synthetic.main.item_set.view.*
 
 
-class QuestionSetsAdapter : RecyclerView.Adapter<QuestionSetsAdapter.ViewHolder>() {
+class QuestionSetsAdapter
+constructor(
+    private val callback: (QuestionSet) -> Unit
+) : RecyclerView.Adapter<QuestionSetsAdapter.ViewHolder>() {
 
     private var questionSets: List<QuestionSet> = emptyList()
 
@@ -35,8 +38,11 @@ class QuestionSetsAdapter : RecyclerView.Adapter<QuestionSetsAdapter.ViewHolder>
         holder.bind(questionSets[position])
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(set: QuestionSet) {
+            itemView.setOnClickListener {
+                callback(questionSets[adapterPosition])
+            }
             itemView.set_title.text = set.title
             itemView.set_subtitle.text = set.description
         }

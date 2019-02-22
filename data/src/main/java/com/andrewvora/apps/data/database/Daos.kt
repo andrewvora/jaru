@@ -7,6 +7,9 @@ internal interface QuestionSetDao {
     @Query("SELECT * FROM $TABLE_QUESTION_SET")
     fun getQuestionSets(): List<QuestionSetEntity>
 
+    @Query("SELECT * FROM $TABLE_QUESTION_SET WHERE $COLUMN_QUESTION_SET_ID = :setId")
+    fun get(setId: String): QuestionSetEntity
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg set: QuestionSetEntity)
 
@@ -19,7 +22,7 @@ internal interface QuestionSetDao {
 
 @Dao
 internal interface QuestionDao {
-    @Query("SELECT * FROM $TABLE_QUESTION WHERE $COLUMN_QUESTION_ID = :setId")
+    @Query("SELECT * FROM $TABLE_QUESTION WHERE $COLUMN_QUESTION_SET_ID = :setId")
     fun getQuestions(setId: String): List<QuestionEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -6,6 +6,7 @@ import com.andrewvora.apps.jaru.glossary.GlossaryViewModel
 import com.andrewvora.apps.jaru.viewglossary.ViewGlossaryViewModel
 import com.andrewvora.apps.jaru.home.HomeViewModel
 import com.andrewvora.apps.jaru.questionsets.QuestionSetsViewModel
+import com.andrewvora.apps.jaru.quiz.QuizViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -29,4 +30,7 @@ abstract class ViewModelModule {
 
     @Binds @IntoMap @ViewModelKey(ViewGlossaryViewModel::class)
     internal abstract fun bindGlossaryViewerViewModel(model: ViewGlossaryViewModel): ViewModel
+
+    @Binds @IntoMap @ViewModelKey(QuizViewModel::class)
+    internal abstract fun bindQuizViewModel(model: QuizViewModel): ViewModel
 }

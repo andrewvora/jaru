@@ -63,6 +63,18 @@ class UseCaseModule {
     }
 
     @Provides
+    fun getQuestionSetUseCase(
+        jaruRepository: JaruRepository,
+        contextProvider: CoroutineContextProvider
+    ) : GetQuestionSetUseCase {
+        return GetQuestionSetUseCase(
+            jaruRepository = jaruRepository,
+            mapper = QuestionSetMapper,
+            contextProvider = contextProvider
+        )
+    }
+
+    @Provides
     fun getQuestionsUseCase(
         jaruRepository: JaruRepository,
         contextProvider: CoroutineContextProvider

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import com.andrewvora.apps.jaru.R
 import com.andrewvora.apps.jaru.di.viewmodel.ViewModelFragment
+import com.andrewvora.apps.jaru.quiz.QuizActivity
 import kotlinx.android.synthetic.main.fragment_sets.*
 
 
@@ -20,7 +21,11 @@ class QuestionSetsFragment : ViewModelFragment() {
     }
 
     private val setsAdapter by lazy {
-        QuestionSetsAdapter()
+        QuestionSetsAdapter { set ->
+            activity?.let {
+                startActivity(QuizActivity.start(it, set.id))
+            }
+        }
     }
 
     override fun onCreateView(

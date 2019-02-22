@@ -6,9 +6,7 @@ import com.andrewvora.apps.domain.mappers.QuestionMapper
 import com.andrewvora.apps.domain.models.Question
 import com.andrewvora.apps.domain.models.QuestionSet
 
-/**
- * Created on 1/21/2019.
- */
+
 class GetQuestionsUseCase
 constructor(
     private val jaruRepository: JaruRepository,
