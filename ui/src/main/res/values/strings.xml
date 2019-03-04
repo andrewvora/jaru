@@ -10,7 +10,11 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_show_hint">Show Hint</string>
     <string name="menu_skip">Skip</string>
+    <string name="menu_play">Play</string>
+
     <string name="refresh_content">Refresh content for the same locale</string>
+
+    <string name="speech_to_text_instruction">Speak your answer</string>
 
     <string name="answer_input_hint">Enter answer here…</string>
 

@@ -1,30 +1,54 @@
 package com.andrewvora.apps.jaru.quiz
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.andrewvora.apps.domain.models.Answer
+import com.andrewvora.apps.domain.models.Question
 import com.andrewvora.apps.domain.models.QuestionType
 import com.andrewvora.apps.jaru.R
+import com.andrewvora.apps.jaru.di.Injector
 import com.andrewvora.apps.jaru.di.viewmodel.ViewModelFragment
+import com.andrewvora.apps.jaru.tts.TextToSpeechHelper
 import com.github.rubensousa.gravitysnaphelper.GravitySnapHelper
 import kotlinx.android.synthetic.main.element_toolbar.*
 import kotlinx.android.synthetic.main.fragment_quiz.*
+import javax.inject.Inject
 
-class QuizFragment : ViewModelFragment() {
+class QuizFragment : ViewModelFragment(), QuizQuestionAdapter.Callback {
 
-    private val viewModel by lazy {
+    @Inject
+    lateinit var textToSpeechHelper: TextToSpeechHelper
+
+    private val viewModel: QuizViewModel by lazy {
         ViewModelProviders.of(this, viewModelFactory).get(QuizViewModel::class.java)
     }
 
-    private val quizQuestionAdapter by lazy {
-        QuizQuestionAdapter()
+    private val quizQuestionAdapter: QuizQuestionAdapter by lazy {
+        QuizQuestionAdapter(this@QuizFragment)
     }
 
+    private val layoutManager: LinearLayoutManager by lazy { object: LinearLayoutManager(
+            activity,
+            LinearLayoutManager.HORIZONTAL,
+            false) {
+
+            override fun canScrollHorizontally(): Boolean {
+                return scrollable
+            }
+        }
+    }
+
+    private var scrollable = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        Injector.inject(this)
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
     }
@@ -46,42 +70,49 @@ class QuizFragment : ViewModelFragment() {
         parent.setSupportActionBar(toolbar)
         parent.supportActionBar?.setDisplayHomeAsUpEnabled(true)
         parent.supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_close_24dp)
-
-        quiz_bottom_app_bar.replaceMenu(R.menu.quiz_bottom_menu)
-        quiz_bottom_app_bar.setNavigationOnClickListener { view ->
-            when (view.id) {
-                R.id.menu_skip -> {}
-                R.id.menu_hint -> {}
-            }
-        }
+        parent.supportActionBar?.title = null
 
         mic_fab.hide()
         mic_fab.setOnClickListener {
-            TODO()
+            textToSpeechHelper.speechToText(this)
         }
 
-        val llm = object: LinearLayoutManager(
-            activity,
-            LinearLayoutManager.HORIZONTAL,
-            false) {
-
-            override fun canScrollHorizontally(): Boolean {
-                return false
-            }
-        }
-        question_view_pager.layoutManager = llm
-        question_view_pager.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        question_pager_view.layoutManager = layoutManager
+        question_pager_view.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                val currentItem = llm.findFirstVisibleItemPosition()
+                val currentItem = layoutManager.findFirstCompletelyVisibleItemPosition()
                 when (quizQuestionAdapter.questions.getOrNull(currentItem)?.type) {
-                    QuestionType.MULTIPLE_CHOICE -> mic_fab.hide()
-                    else -> mic_fab.show()
+                    QuestionType.MULTIPLE_CHOICE -> mic_fab.post { mic_fab.hide() }
+                    else -> mic_fab.post {
+                        if (textToSpeechHelper.hasSpeechRecognizer()) {
+                            mic_fab.show()
+                        }
+                    }
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    scrollable = false
                 }
             }
         })
-        question_view_pager.adapter = quizQuestionAdapter
+        question_pager_view.adapter = quizQuestionAdapter
         val snapHelper = GravitySnapHelper(Gravity.START)
-        snapHelper.attachToRecyclerView(question_view_pager)
+        snapHelper.attachToRecyclerView(question_pager_view)
+
+        quiz_bottom_app_bar.replaceMenu(R.menu.quiz_bottom_menu)
+        quiz_bottom_app_bar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_skip -> {
+                    goToNextQuestion()
+                }
+                R.id.menu_hint -> {
+                    quizQuestionAdapter.showHint = !quizQuestionAdapter.showHint
+                }
+            }
+            return@setOnMenuItemClickListener true
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -95,14 +126,46 @@ class QuizFragment : ViewModelFragment() {
                 activity?.onBackPressed()
                 true
             }
+            R.id.menu_play -> {
+                playCurrentQuestion()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun playCurrentQuestion() {
+        val position = layoutManager.findFirstCompletelyVisibleItemPosition()
+        val questionText = quizQuestionAdapter.questions[position].text
+        textToSpeechHelper.textToSpeech(questionText)
     }
 
     private fun initObservers() {
         viewModel.questionSet.observe(this, Observer {
             quizQuestionAdapter.questions = it.questions
         })
+        viewModel.answerIsCorrect.observe(this, Observer {
+            Toast.makeText(activity, "Correct: $it", Toast.LENGTH_SHORT).show()
+            goToNextQuestion()
+        })
+    }
+
+    private fun goToNextQuestion() {
+        scrollable = true
+        val nextPos = layoutManager.findFirstVisibleItemPosition() + 1
+        question_pager_view.smoothScrollToPosition(nextPos)
+    }
+
+    override fun onAnswer(question: Question, answer: Answer) {
+        viewModel.answerQuestion(question = question, answer = answer)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        textToSpeechHelper.getTextFromBundle(data).takeIf { it.isNotBlank() }?.let {
+            val currentQuestion = layoutManager.findFirstCompletelyVisibleItemPosition()
+            quizQuestionAdapter.userAnswers[currentQuestion] = Answer(text = it)
+            quizQuestionAdapter.notifyItemChanged(currentQuestion)
+        }
     }
 
     companion object {

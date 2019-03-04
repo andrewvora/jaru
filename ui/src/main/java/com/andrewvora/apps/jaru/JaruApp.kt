@@ -6,6 +6,7 @@ import com.andrewvora.apps.jaru.di.AppComponentProvider
 import com.andrewvora.apps.jaru.di.DaggerAppComponent
 import com.facebook.stetho.Stetho
 
+@Suppress("unused")
 class JaruApp : Application(), AppComponentProvider {
 
     override val component: AppComponent by lazy {
@@ -17,5 +18,6 @@ class JaruApp : Application(), AppComponentProvider {
     override fun onCreate() {
         super.onCreate()
         Stetho.initializeWithDefaults(this)
+        component.textToSpeechHelper().init()
     }
 }

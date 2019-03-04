@@ -3,7 +3,9 @@ package com.andrewvora.apps.jaru.quiz
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.RecyclerView
+import com.andrewvora.apps.domain.models.Answer
 import com.andrewvora.apps.domain.models.Question
 import com.andrewvora.apps.domain.models.QuestionType
 import com.andrewvora.apps.jaru.R
@@ -11,9 +13,20 @@ import kotlinx.android.synthetic.main.item_answer.view.*
 import kotlinx.android.synthetic.main.item_question_free_form.view.*
 import kotlinx.android.synthetic.main.item_question_multi_choice.view.*
 
-class QuizQuestionAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class QuizQuestionAdapter
+constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var questions: List<Question> = emptyList()
+        set(value) {
+            userAnswers.clear()
+
+            field = value
+            notifyDataSetChanged()
+        }
+
+    val userAnswers: MutableMap<Int, Answer> = mutableMapOf()
+
+    var showHint: Boolean = false
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -54,14 +67,34 @@ class QuizQuestionAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class TextInputViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(question: Question) {
-            itemView.question_text?.text = question.text
-            itemView.question_transcript?.text = question.transcript
+            itemView.question_text.text = question.text
+            itemView.question_transcript.visibility = if (showHint)
+                View.VISIBLE
+            else
+                View.GONE
+            itemView.question_transcript.text = question.transcript
+
+            val existingAnswer = userAnswers[adapterPosition]?.text ?: ""
+            itemView.question_answer_input.setText(existingAnswer)
+            itemView.question_answer_input.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    val currentQuestion = questions[adapterPosition]
+                    val answer = Answer(text = itemView.question_answer_input.text.toString())
+                    callback.onAnswer(question = currentQuestion, answer = answer)
+                    return@setOnEditorActionListener true
+                }
+                return@setOnEditorActionListener false
+            }
         }
     }
 
     inner class MultiChoiceViewHolder(view: View): RecyclerView.ViewHolder(view) {
         fun bind(question: Question) {
             itemView.multi_choice_question_text.text = question.text
+            itemView.multi_choice_question_transcript.visibility = if (showHint)
+                View.VISIBLE
+            else
+                View.GONE
             itemView.multi_choice_question_transcript.text = question.transcript
             itemView.answer_grid_layout.removeAllViews()
             question.answers.forEach {  answer ->
@@ -71,10 +104,17 @@ class QuizQuestionAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     false)
 
                 answerView.answer_text.text = answer.text
+                answerView.setOnClickListener {
+                    val currentQuestion = questions[adapterPosition]
+                    callback.onAnswer(question = currentQuestion, answer = answer)
+                }
 
                 itemView.answer_grid_layout.addView(answerView)
             }
-            for (i in 0..(5 - question.answers.size)) {
+
+            // offset by 1 since range is inclusive
+            val fillerViewsNeeded = (MAX_MULTIPLE_CHOICE_ANSWERS - question.answers.size - 1)
+            for (i in 0..fillerViewsNeeded) {
                 val fillerView = getFillerAnswerView()
                 itemView.answer_grid_layout.addView(fillerView)
             }
@@ -92,8 +132,14 @@ class QuizQuestionAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
+    interface Callback {
+        fun onAnswer(question: Question, answer: Answer)
+    }
+
     companion object {
         const val INPUT_VIEW_HOLDER = 1
         const val MULTI_CHOICE_VIEW_HOLDER = 2
+
+        private const val MAX_MULTIPLE_CHOICE_ANSWERS = 6
     }
 }
