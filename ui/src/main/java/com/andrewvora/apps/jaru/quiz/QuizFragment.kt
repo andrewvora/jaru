@@ -3,7 +3,7 @@ package com.andrewvora.apps.jaru.quiz
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -36,7 +36,7 @@ class QuizFragment : ViewModelFragment(), QuizQuestionAdapter.Callback {
 
     private val layoutManager: LinearLayoutManager by lazy { object: LinearLayoutManager(
             activity,
-            LinearLayoutManager.HORIZONTAL,
+            HORIZONTAL,
             false) {
 
             override fun canScrollHorizontally(): Boolean {
@@ -144,16 +144,55 @@ class QuizFragment : ViewModelFragment(), QuizQuestionAdapter.Callback {
         viewModel.questionSet.observe(this, Observer {
             quizQuestionAdapter.questions = it.questions
         })
-        viewModel.answerIsCorrect.observe(this, Observer {
-            Toast.makeText(activity, "Correct: $it", Toast.LENGTH_SHORT).show()
-            goToNextQuestion()
+        viewModel.answerResult.observe(this, Observer { result ->
+            activity?.let {
+                val answersMsg = result.answers.joinToString(separator = "\n") { answer ->
+                    answer.text
+                }
+                AlertDialog.Builder(it)
+                    .setTitle(if (result.wasCorrect) {
+                        R.string.correct_answer_title
+                    } else {
+                        R.string.wrong_answer_title
+                    })
+                    .setMessage(resources.getQuantityString(R.plurals.correct_answers_message,
+                        result.answers.size,
+                        answersMsg.trim()))
+                    .setCancelable(true)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setOnDismissListener {
+                        goToNextQuestion()
+                    }
+                    .create()
+                    .show()
+            }
         })
     }
 
     private fun goToNextQuestion() {
         scrollable = true
+
         val nextPos = layoutManager.findFirstVisibleItemPosition() + 1
-        question_pager_view.smoothScrollToPosition(nextPos)
+        if (nextPos >= quizQuestionAdapter.itemCount) {
+            onQuizCompleted()
+        } else {
+            question_pager_view.smoothScrollToPosition(nextPos)
+        }
+    }
+
+    private fun onQuizCompleted() {
+        activity?.let {
+            AlertDialog.Builder(it)
+                .setTitle(R.string.completed_quiz_title)
+                .setMessage(getString(R.string.completed_quiz_message, viewModel.getScore()))
+                .setPositiveButton(android.R.string.ok, null)
+                .setOnDismissListener { _ ->
+                    it.finish()
+                }
+                .setCancelable(false)
+                .create()
+                .show()
+        }
     }
 
     override fun onAnswer(question: Question, answer: Answer) {

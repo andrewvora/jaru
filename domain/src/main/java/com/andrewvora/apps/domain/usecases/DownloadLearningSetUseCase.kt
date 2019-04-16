@@ -5,7 +5,6 @@ import com.andrewvora.apps.domain.CoroutineContextProvider
 import com.andrewvora.apps.domain.mappers.GlossaryMapper
 import com.andrewvora.apps.domain.mappers.QuestionSetMapper
 import com.andrewvora.apps.domain.models.LearningSet
-import com.andrewvora.apps.domain.models.QuestionSet
 
 /**
  * Created on 1/21/2019.
@@ -20,7 +19,8 @@ constructor(
 
     override suspend fun doWork(): LearningSet {
         return runAsync {
-            repository.downloadFullLearningSet().let { learningSet ->
+            repository.clearStorage()
+            return@runAsync repository.downloadFullLearningSet().let { learningSet ->
                 LearningSet(
                     glossaries = learningSet.glossary?.map { glossaryMapper.from(it) } ?: emptyList(),
                     sets = learningSet.questionSets?.map { questionSetMapper.from(it) } ?: emptyList()

@@ -42,4 +42,8 @@ internal constructor(
     override fun fetchGlossaries(): List<GlossaryDto> {
         return localSource.getLearningSet()?.glossary ?: emptyList()
     }
+
+    override fun clearStorage() {
+        localSource.clear()
+    }
 }

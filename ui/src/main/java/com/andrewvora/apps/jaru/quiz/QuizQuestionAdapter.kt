@@ -35,12 +35,14 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val layoutResId = when (viewType) {
-            INPUT_VIEW_HOLDER -> R.layout.item_question_free_form
+            INPUT_VIEW_HOLDER,
+            LONG_INPUT_VIEW_HOLDER -> R.layout.item_question_free_form
             else -> R.layout.item_question_multi_choice
         }
         val view = layoutInflater.inflate(layoutResId, parent, false)
         return when (viewType) {
-            INPUT_VIEW_HOLDER -> TextInputViewHolder(view)
+            INPUT_VIEW_HOLDER,
+            LONG_INPUT_VIEW_HOLDER -> TextInputViewHolder(view, viewType == LONG_INPUT_VIEW_HOLDER)
             else -> MultiChoiceViewHolder(view)
         }
     }
@@ -52,8 +54,8 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
     override fun getItemViewType(position: Int): Int {
         return when(questions[position].type) {
             QuestionType.SINGLE_INPUT,
-            QuestionType.FREE_FORM,
             QuestionType.UNKNOWN -> INPUT_VIEW_HOLDER
+            QuestionType.FREE_FORM -> LONG_INPUT_VIEW_HOLDER
             QuestionType.MULTIPLE_CHOICE -> MULTI_CHOICE_VIEW_HOLDER
         }
     }
@@ -65,7 +67,10 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
         }
     }
 
-    inner class TextInputViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class TextInputViewHolder(
+        view: View,
+        private val multiline: Boolean = false
+    ) : RecyclerView.ViewHolder(view) {
         fun bind(question: Question) {
             itemView.question_text.text = question.text
             itemView.question_transcript.visibility = if (showHint)
@@ -75,16 +80,29 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
             itemView.question_transcript.text = question.transcript
 
             val existingAnswer = userAnswers[adapterPosition]?.text ?: ""
+            if (multiline) {
+                itemView.question_answer_input.maxLines = 3
+            } else {
+                itemView.question_answer_input.maxLines = 1
+            }
             itemView.question_answer_input.setText(existingAnswer)
             itemView.question_answer_input.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    val currentQuestion = questions[adapterPosition]
-                    val answer = Answer(text = itemView.question_answer_input.text.toString())
-                    callback.onAnswer(question = currentQuestion, answer = answer)
+                    sendAnswer()
                     return@setOnEditorActionListener true
                 }
                 return@setOnEditorActionListener false
             }
+
+            itemView.submit_answer.setOnClickListener {
+                sendAnswer()
+            }
+        }
+
+        private fun sendAnswer() {
+            val currentQuestion = questions[adapterPosition]
+            val answer = Answer(text = itemView.question_answer_input.text.toString())
+            callback.onAnswer(question = currentQuestion, answer = answer)
         }
     }
 
@@ -139,6 +157,7 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
     companion object {
         const val INPUT_VIEW_HOLDER = 1
         const val MULTI_CHOICE_VIEW_HOLDER = 2
+        const val LONG_INPUT_VIEW_HOLDER = 3
 
         private const val MAX_MULTIPLE_CHOICE_ANSWERS = 6
     }

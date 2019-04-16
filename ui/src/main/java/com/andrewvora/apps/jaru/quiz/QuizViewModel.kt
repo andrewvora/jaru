@@ -17,13 +17,15 @@ constructor(
 ) : ViewModel() {
 
     val questionSet = MutableLiveData<QuestionSet>()
-    val answerIsCorrect = MutableLiveData<Boolean>()
+    val answerResult = MutableLiveData<AnswerResult>()
+
+    private var correctAnswerCount = 0
 
     fun loadQuestions(setId: String) {
         getQuestionSetUseCase.execute(
             params = setId,
             onResult = {
-                questionSet.value = it
+                questionSet.value = it.copy(questions = it.questions.shuffled())
             },
             onError = {
                 Timber.e(it)
@@ -31,16 +33,25 @@ constructor(
         )
     }
 
+    fun getScore(): String {
+        return "$correctAnswerCount / ${questionSet.value?.questions?.size ?: 0}"
+    }
+
     fun answerQuestion(question: Question, answer: Answer) {
-        answerIsCorrect.value = when (question.type) {
+        val isCorrect = when (question.type) {
             QuestionType.SINGLE_INPUT -> question.answers.any { it.text == answer.text.trim() }
             QuestionType.MULTIPLE_CHOICE -> question.answerId == answer.id
             QuestionType.FREE_FORM -> true
             else -> false
         }
+        correctAnswerCount += if (isCorrect) 1 else 0
+
+        answerResult.value = AnswerResult(question.answers, isCorrect)
     }
 
     override fun onCleared() {
         getQuestionSetUseCase.cancel()
     }
+
+    data class AnswerResult(val answers: List<Answer>, val wasCorrect: Boolean)
 }

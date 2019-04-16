@@ -145,6 +145,10 @@ internal class LearningSetRoomSource(
         )
     }
 
+    fun clear() {
+        jaruDb.clearAllTables()
+    }
+
     private data class QuestionSetSaveResult(
         val sets: List<QuestionSetEntity>,
         val questions: List<QuestionEntity>,

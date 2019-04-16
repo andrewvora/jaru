@@ -1,8 +1,6 @@
 package com.andrewvora.apps.jaru.downloader
 
-import android.app.Application
-import android.content.Intent
-import androidx.core.app.JobIntentService
+import com.andrewvora.apps.domain.usecases.DownloadLearningSetUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,26 +9,23 @@ import javax.inject.Singleton
 class LearningSetDownloader
 @Inject
 constructor(
-    private val app: Application
+    private val downloadUseCase: DownloadLearningSetUseCase
 ) {
     private val subscribers: MutableList<Subscriber> = mutableListOf()
         @Synchronized get
 
     fun load() {
-        val jobId = 100
-        val intent = Intent()
-        JobIntentService.enqueueWork(
-            app,
-            LearningSetDownloadService::class.java,
-            jobId,
-            intent)
+        downloadUseCase.execute(onResult = {
+            complete()
+        }, onError = {
+            complete()
+        })
     }
 
-    fun complete() {
+    private fun complete() {
         subscribers.forEach {
             it.onComplete()
         }
-        subscribers.clear()
     }
 
     fun subscribe(sub: Subscriber) {

@@ -11,5 +11,6 @@ interface JaruRepository {
     fun fetchQuestions(setId: String): List<QuestionDto>
     fun fetchAnswers(questionId: String): List<AnswerDto>
     fun fetchGlossaries(): List<GlossaryDto>
+    fun clearStorage()
 
 }

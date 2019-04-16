@@ -31,7 +31,7 @@ class HomeActivity : ViewModelActivity() {
 
     private fun initObservers() {
         viewModel.downloadingLearningSet.observe(this, Observer { downloading ->
-            loading_text.visibility = if (downloading) View.VISIBLE else View.GONE
+            loading_indicator.visibility = if (downloading) View.VISIBLE else View.GONE
         })
     }
 
