@@ -25,13 +25,16 @@ class HomeActivity : ViewModelActivity() {
         setContentView(R.layout.activity_home)
         setSupportActionBar(toolbar)
 
+        bottom_nav_view.setOnNavigationItemReselectedListener {
+            // do nothing
+        }
         bottom_nav_view.setupWithNavController(findNavController(R.id.nav_host_fragment))
         initObservers()
     }
 
     private fun initObservers() {
         viewModel.downloadingLearningSet.observe(this, Observer { downloading ->
-            loading_indicator.visibility = if (downloading) View.VISIBLE else View.GONE
+            home_loading_indicator.visibility = if (downloading) View.VISIBLE else View.GONE
         })
     }
 

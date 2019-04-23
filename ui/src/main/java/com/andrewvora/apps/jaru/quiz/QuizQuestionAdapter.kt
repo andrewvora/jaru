@@ -1,5 +1,6 @@
 package com.andrewvora.apps.jaru.quiz
 
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -71,6 +72,7 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
         view: View,
         private val multiline: Boolean = false
     ) : RecyclerView.ViewHolder(view) {
+
         fun bind(question: Question) {
             itemView.question_text.text = question.text
             itemView.question_transcript.visibility = if (showHint)
@@ -80,20 +82,22 @@ constructor(private val callback: Callback) : RecyclerView.Adapter<RecyclerView.
             itemView.question_transcript.text = question.transcript
 
             val existingAnswer = userAnswers[adapterPosition]?.text ?: ""
+            itemView.question_answer_input.setHorizontallyScrolling(!multiline)
             if (multiline) {
                 itemView.question_answer_input.maxLines = 3
+                itemView.question_answer_input.inputType = InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE
             } else {
                 itemView.question_answer_input.maxLines = 1
+                itemView.question_answer_input.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                itemView.question_answer_input.setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        sendAnswer()
+                        return@setOnEditorActionListener true
+                    }
+                    return@setOnEditorActionListener false
+                }
             }
             itemView.question_answer_input.setText(existingAnswer)
-            itemView.question_answer_input.setOnEditorActionListener { _, actionId, _ ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    sendAnswer()
-                    return@setOnEditorActionListener true
-                }
-                return@setOnEditorActionListener false
-            }
-
             itemView.submit_answer.setOnClickListener {
                 sendAnswer()
             }

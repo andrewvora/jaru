@@ -19,6 +19,7 @@ constructor(
 
     init {
         downloader.subscribe(this)
+        loadQuestionSets()
     }
 
     fun loadQuestionSets() {

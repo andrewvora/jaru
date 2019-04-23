@@ -71,7 +71,6 @@
                 android:layout_marginBottom="16dp"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:inputType="text"
                 android:autofillHints="none"
                 android:importantForAutofill="no"
                 android:hint="@string/answer_input_hint"/>

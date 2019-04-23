@@ -16,8 +16,12 @@ internal constructor(
 
     override fun downloadFullLearningSet(): LearningSetDto {
         val downloadedLearningSet = remoteSource.getContent()
-        downloadedLearningSet?.let {
-            localSource.saveLearningSet(it)
+        downloadedLearningSet?.let { learningSet ->
+            // only update the database if the returned results are valid
+            if (learningSet.questionSets?.isNotEmpty() == true) {
+                clearStorage()
+                localSource.saveLearningSet(learningSet)
+            }
         }
 
         return downloadedLearningSet ?: LearningSetDto()

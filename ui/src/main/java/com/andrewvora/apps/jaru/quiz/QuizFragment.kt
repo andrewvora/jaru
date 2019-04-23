@@ -83,11 +83,13 @@ class QuizFragment : ViewModelFragment(), QuizQuestionAdapter.Callback {
                 val currentItem = layoutManager.findFirstCompletelyVisibleItemPosition()
                 when (quizQuestionAdapter.questions.getOrNull(currentItem)?.type) {
                     QuestionType.MULTIPLE_CHOICE -> mic_fab.post { mic_fab.hide() }
-                    else -> mic_fab.post {
+                    QuestionType.FREE_FORM,
+                    QuestionType.SINGLE_INPUT -> mic_fab.post {
                         if (textToSpeechHelper.hasSpeechRecognizer()) {
                             mic_fab.show()
                         }
                     }
+                    else -> {}
                 }
             }
 

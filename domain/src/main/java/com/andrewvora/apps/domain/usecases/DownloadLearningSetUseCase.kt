@@ -19,7 +19,6 @@ constructor(
 
     override suspend fun doWork(): LearningSet {
         return runAsync {
-            repository.clearStorage()
             return@runAsync repository.downloadFullLearningSet().let { learningSet ->
                 LearningSet(
                     glossaries = learningSet.glossary?.map { glossaryMapper.from(it) } ?: emptyList(),

@@ -44,14 +44,16 @@ class QuestionSetsFragment : ViewModelFragment() {
 
         initObservers()
 
-        viewModel.loadQuestionSets()
+        loading_indicator.visibility = View.VISIBLE
     }
 
     private fun initObservers() {
         viewModel.questionSets.observe(this, Observer {
+            loading_indicator.visibility = View.GONE
             setsAdapter.setData(it)
         })
         viewModel.error.observe(this, Observer {
+            loading_indicator.visibility = View.GONE
             Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
         })
     }
